@@ -8,6 +8,12 @@ FIXME: Write a paragraph about the library/project and highlight its goals.
 
 ## Setup
 
+Setup your environment by copying the `profiles.clj.example`.
+
+    cp profiles.clj.example profiles.clj
+
+And add the API endpoint URL.
+
 To get an interactive development environment run:
 
     lein figwheel
