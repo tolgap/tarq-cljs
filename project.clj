@@ -9,6 +9,7 @@
                  [org.clojure/core.async "0.2.374"]
                  [environ "1.0.1"]
                  [sablono "0.3.6"]
+                 [cljs-http "0.1.38"]
                  [org.omcljs/om "0.9.0"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
