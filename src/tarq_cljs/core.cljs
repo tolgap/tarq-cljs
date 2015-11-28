@@ -16,6 +16,12 @@
 (defn log [elem]
   (.log js/console (pr-str elem)))
 
+(defn website-list-item [{:keys [name]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html [:li.list-item name]))))
+
 (defn website-list [data owner]
   (reify
     om/IWillMount
@@ -26,7 +32,7 @@
           (om/update! data nil websites))))
     om/IRender
     (render [_]
-      (html [:ul (map (fn [website] [:li.list-item (website :name)]) data)]))))
+      (html [:ul (om/build-all website-list-item data)]))))
 
 (defn websites-box [data owner]
   (om/component
