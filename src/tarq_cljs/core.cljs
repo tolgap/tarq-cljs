@@ -3,16 +3,33 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]
-            [tarq-cljs.api :as api]))
+            [secretary.core :as secretary :refer-macros [defroute]]
+            [tarq-cljs.api :as api]
+            [goog.events :as events]
+            [goog.history.EventType :as EventType])
+  (:import goog.History))
 
 (enable-console-print!)
 
 (println "Edits to this text should show up in your developer console.")
 
 ;; define your app data so that it doesn't get over-written on reload
+(defonce app-state (atom {:websites [] :page :websites}))
 
-(defonce app-state (atom {:websites []}))
+(secretary/set-config! :prefix "#")
 
+(defroute servers-path "/servers" []
+  (swap! app-state assoc :page :servers))
+
+(defroute websites-path "/" []
+  (swap! app-state assoc :page :websites))
+
+(defroute "*" []
+  (swap! app-state assoc :page :404))
+
+(let [h (History.)]
+  (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
+  (doto h (.setEnabled true)))
 (defn log [elem]
   (.log js/console (pr-str elem)))
 
@@ -22,7 +39,7 @@
     (render [_]
       (html [:li.list-item name]))))
 
-(defn website-list [data owner]
+(defn websites-list [data owner]
   (reify
     om/IWillMount
     (will-mount [_]
@@ -34,18 +51,36 @@
     (render [_]
       (html [:ul (om/build-all website-list-item data)]))))
 
-(defn websites-box [data owner]
+(defn websites-page [data owner]
   (om/component
-   (html [:div.website-box (om/build website-list (data :websites))])))
+   (html [:div#website-page
+          (om/build websites-list (data :websites))
+          [:a {:href (servers-path)} "servers"]])))
+
+(defn servers-page [data owner]
+  (om/component
+   (html [:div#server-page
+          [:h1 "server component"]
+          [:a {:href (websites-path)} "websites"]])))
+
+(defn not-found-page [data owner]
+  (om/component
+   (html [:div#not-found-page
+          [:h1 "404"]
+          [:a {:href (websites-path)} "websites"]
+          [:a {:href (servers-path)} "servers"]])))
 
 (om/root
   (fn [data owner]
     (reify om/IRender
       (render [_]
-        (om/build websites-box data))))
+        (let [page (data :page)]
+          (condp = page
+            :websites (om/build websites-page data)
+            :servers (om/build servers-page data)
+            (om/build not-found-page data))))))
   app-state
-  {:target (. js/document (getElementById "app"))})
-
+  {:target js/document.body})
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on
