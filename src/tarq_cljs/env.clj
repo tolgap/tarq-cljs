@@ -1,4 +1,4 @@
-(ns tarq-cljs.env
+(ns ^:figwheel-always tarq-cljs.env
   (:require [environ.core :refer [env]]))
 
 (defmacro cljs-env [key]
