@@ -5,6 +5,7 @@
             [sablono.core :as html :refer-macros [html]]
             [secretary.core :as secretary :refer-macros [defroute]]
             [accountant.core :as accountant]
+            [tarq-cljs.materialize.toolbar :as toolbar]
             [tarq-cljs.api :as api]))
 
 (enable-console-print!)
@@ -87,11 +88,14 @@
       (render [_]
         (let [page (data :page)
               params (data :params)]
-          (condp = page
-            :websites (om/build websites-page data)
-            :website (om/build website-page data {:opts params})
-            :servers (om/build servers-page data)
-            (om/build not-found-page data))))))
+          (html [:div#page
+                 (om/build toolbar/generate data {:opts {:title "Tarq"
+                                                         :items []}})
+                 (condp = page
+                   :websites (om/build websites-page data)
+                   :website (om/build website-page data {:opts params})
+                   :servers (om/build servers-page data)
+                   (om/build not-found-page data))])))))
   app-state
   {:target (. js/document (getElementById "app"))})
 
