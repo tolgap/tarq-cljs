@@ -12,12 +12,18 @@
 (println "Edits to this text should show up in your developer console.")
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:websites [] :page :websites}))
+(defonce app-state (atom {:page :websites :params {} :websites []}))
 
 (accountant/configure-navigation!)
 
 (defroute servers-path "/servers" []
   (swap! app-state assoc :page :servers))
+
+(defroute website-path "/servers/:server-id/websites/:id" [server-id id]
+  (swap! app-state assoc
+         :page :website
+         :params {:server-id server-id
+                  :id id}))
 
 (defroute websites-path "/" []
   (swap! app-state assoc :page :websites))
@@ -30,11 +36,13 @@
 (defn log [elem]
   (.log js/console (pr-str elem)))
 
-(defn website-list-item [{:keys [name]} owner]
+(defn website-list-item [{:keys [server_id id name]} owner]
   (reify
     om/IRender
     (render [_]
-      (html [:li.list-item name]))))
+      (html [:li.list-item
+             [:a {:href (website-path {:server-id server_id :id id})}
+              name]]))))
 
 (defn websites-list [data owner]
   (reify
@@ -54,6 +62,12 @@
           (om/build websites-list (data :websites))
           [:a {:href (servers-path)} "servers"]])))
 
+(defn website-page [data owner {:keys [server-id id]}]
+  (om/component
+   (html [:div#website-detail
+          [:p (str "Website id: " id)]
+          [:p (str "Server id: " server-id)]])))
+
 (defn servers-page [data owner]
   (om/component
    (html [:div#server-page
@@ -71,9 +85,11 @@
   (fn [data owner]
     (reify om/IRender
       (render [_]
-        (let [page (data :page)]
+        (let [page (data :page)
+              params (data :params)]
           (condp = page
             :websites (om/build websites-page data)
+            :website (om/build website-page data {:opts params})
             :servers (om/build servers-page data)
             (om/build not-found-page data))))))
   app-state
