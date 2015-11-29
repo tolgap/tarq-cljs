@@ -4,10 +4,8 @@
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]
             [secretary.core :as secretary :refer-macros [defroute]]
-            [tarq-cljs.api :as api]
-            [goog.events :as events]
-            [goog.history.EventType :as EventType])
-  (:import goog.History))
+            [accountant.core :as accountant]
+            [tarq-cljs.api :as api]))
 
 (enable-console-print!)
 
@@ -16,7 +14,7 @@
 ;; define your app data so that it doesn't get over-written on reload
 (defonce app-state (atom {:websites [] :page :websites}))
 
-(secretary/set-config! :prefix "#")
+(accountant/configure-navigation!)
 
 (defroute servers-path "/servers" []
   (swap! app-state assoc :page :servers))
@@ -27,9 +25,8 @@
 (defroute "*" []
   (swap! app-state assoc :page :404))
 
-(let [h (History.)]
-  (goog.events/listen h EventType/NAVIGATE #(secretary/dispatch! (.-token %)))
-  (doto h (.setEnabled true)))
+(accountant/dispatch-current!)
+
 (defn log [elem]
   (.log js/console (pr-str elem)))
 
@@ -80,7 +77,7 @@
             :servers (om/build servers-page data)
             (om/build not-found-page data))))))
   app-state
-  {:target js/document.body})
+  {:target (. js/document (getElementById "app"))})
 
 (defn on-js-reload []
   ;; optionally touch your app-state to force rerendering depending on

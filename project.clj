@@ -10,6 +10,7 @@
                  [environ "1.0.1"]
                  [sablono "0.3.6"]
                  [secretary "1.2.3"]
+                 [venantius/accountant "0.1.5"]
                  [cljs-http "0.1.38"]
                  [org.omcljs/om "0.9.0"]]
 
