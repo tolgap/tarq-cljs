@@ -41,7 +41,7 @@
   (reify
     om/IRender
     (render [_]
-      (html [:li.list-item
+      (html [:li.collection-item
              [:a {:href (website-path {:server-id server_id :id id})}
               name]]))))
 
@@ -55,13 +55,16 @@
           (om/update! data nil websites))))
     om/IRender
     (render [_]
-      (html [:ul (om/build-all website-list-item data)]))))
+      (html [:ul.collection.with-header
+             [:li.collection-header [:h4 "Websites"]]
+             (om/build-all website-list-item data)]))))
 
 (defn websites-page [data owner]
   (om/component
    (html [:div#website-page
-          (om/build websites-list (data :websites))
-          [:a {:href (servers-path)} "servers"]])))
+          [:div.container
+           (om/build websites-list (data :websites))
+           [:a {:href (servers-path)} "servers"]]])))
 
 (defn website-page [data owner {:keys [server-id id]}]
   (om/component
