@@ -3,34 +3,14 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]
-            [secretary.core :as secretary :refer-macros [defroute]]
-            [accountant.core :as accountant]
             [tarq-cljs.materialize.toolbar :as toolbar]
             [tarq-cljs.state :refer [app-state]]
+            [tarq-cljs.routing :as path]
             [tarq-cljs.api :as api]))
 
 (enable-console-print!)
 
 (println "Edits to this text should show up in your developer console.")
-
-(accountant/configure-navigation!)
-
-(defroute servers-path "/servers" []
-  (swap! app-state assoc :page :servers))
-
-(defroute website-path "/servers/:server-id/websites/:id" [server-id id]
-  (swap! app-state assoc
-         :page :website
-         :params {:server-id server-id
-                  :id id}))
-
-(defroute websites-path "/" []
-  (swap! app-state assoc :page :websites))
-
-(defroute "*" []
-  (swap! app-state assoc :page :404))
-
-(accountant/dispatch-current!)
 
 (defn log [elem]
   (.log js/console (pr-str elem)))
@@ -40,8 +20,7 @@
     om/IRender
     (render [_]
       (html [:li.collection-item
-             [:a {:href (website-path {:server-id server_id :id id})}
-              name]]))))
+             [:a {:href (path/website {:server-id server_id :id id})} name]]))))
 
 (defn websites-list [data owner]
   (reify
@@ -62,7 +41,7 @@
    (html [:div#website-page
           [:div.container
            (om/build websites-list (data :websites))
-           [:a {:href (servers-path)} "servers"]]])))
+           [:a {:href (path/servers)} "servers"]]])))
 
 (defn website-page [data owner {:keys [server-id id]}]
   (om/component
@@ -74,14 +53,14 @@
   (om/component
    (html [:div#server-page
           [:h1 "server component"]
-          [:a {:href (websites-path)} "websites"]])))
+          [:a {:href (path/websites)} "websites"]])))
 
 (defn not-found-page [data owner]
   (om/component
    (html [:div#not-found-page
           [:h1 "404"]
-          [:a {:href (websites-path)} "websites"]
-          [:a {:href (servers-path)} "servers"]])))
+          [:a {:href (path/websites)} "websites"]
+          [:a {:href (path/servers)} "servers"]])))
 
 (om/root
   (fn [data owner]
