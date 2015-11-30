@@ -6,14 +6,12 @@
             [secretary.core :as secretary :refer-macros [defroute]]
             [accountant.core :as accountant]
             [tarq-cljs.materialize.toolbar :as toolbar]
+            [tarq-cljs.state :refer [app-state]]
             [tarq-cljs.api :as api]))
 
 (enable-console-print!)
 
 (println "Edits to this text should show up in your developer console.")
-
-;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:page :websites :params {} :websites []}))
 
 (accountant/configure-navigation!)
 
