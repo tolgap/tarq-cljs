@@ -1,2 +1,14 @@
 /* some style */
-
+#website-list {
+  position: fixed;
+  bottom: 0;
+  overflow-y: scroll;
+  height: 85%;
+}
+#website-detail {
+  position: fixed;
+  bottom: 0;
+  overflow-y: scroll;
+  height: 85%;
+  left: 50%;
+}

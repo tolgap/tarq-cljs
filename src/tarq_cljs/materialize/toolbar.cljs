@@ -10,7 +10,7 @@
   (om/component
    (html [:nav
           [:div.nav-wrapper
-           [:a.brand-logo title]
+           title
            [:ul.right.hide-on-med-and-down
             [:a [:li
              [:i.material-icons "more_vert"]]]

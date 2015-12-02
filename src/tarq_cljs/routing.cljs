@@ -11,9 +11,10 @@
 
 (defroute website "/servers/:server-id/websites/:id" [server-id id]
   (swap! app-state assoc
-         :page :website
+         :page :websites
          :params {:server-id server-id
-                  :id id}))
+                  :id id
+                  :current-website {}}))
 
 (defroute websites "/" []
   (swap! app-state assoc

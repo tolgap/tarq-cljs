@@ -12,6 +12,9 @@
 (def websites-path
   (string/join "/" [api-url "websites"]))
 
+(defn website-path [server-id id]
+  (string/join "/" [api-url "servers" server-id "websites" id]))
+
 (defn json-to [path]
   (http/get path {:with-credentials? false}))
 
