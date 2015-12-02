@@ -13,7 +13,7 @@
 (println "Edits to this text should show up in your developer console.")
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:page :websites :params {} :websites [] :current-website {}}))
+(defonce app-state (atom {:page :websites :params {} :websites []}))
 
 (defn log [elem]
   (.log js/console (pr-str elem)))
@@ -27,7 +27,8 @@
   (swap! app-state assoc
          :page :websites
          :params {:server-id server-id
-                  :id id}))
+                  :id id
+                  :current-website {}}))
 
 (defroute websites-path "/" []
   (swap! app-state assoc :page :websites))
@@ -67,6 +68,16 @@
              [:p (str "Website id: " (data :id))]
              [:p (str "Server id: " (data :server_id))]]))))
 
+(defn load-website [props data owner]
+  (om/set-state! owner [:loading] true)
+  (go
+    (let [server-id (props :server-id)
+          id (props :id)
+          response (api/json-to (api/website-path server-id id))
+          website ((<! response) :body)]
+      (om/update! data [:current-website] website)
+      (om/set-state! owner [:loading] false))))
+
 (defn website-detail [data owner]
   (reify
     om/IInitState
@@ -74,16 +85,12 @@
       {:loading true})
     om/IWillMount
     (will-mount [_]
-      (go
-        (let [server-id (om/get-state owner :server-id)
-              id (om/get-state owner :id)
-              response (api/json-to (api/website-path server-id id))
-              website ((<! response) :body)]
-          (om/update! data [:current-website] website)
-          (om/set-state! owner [:loading] false))))
+      (load-website data data owner))
+    om/IWillReceiveProps
+    (will-receive-props [_ next-props]
+      (load-website next-props data owner))
     om/IRenderState
-    (render-state [_ {:keys [loading server-id id]}]
-      (log [server-id id])
+    (render-state [_ {:keys [loading]}]
       (html
        (if loading
          [:p "Loading..."]
@@ -91,10 +98,6 @@
 
 (defn websites-page [data owner]
   (reify
-    om/IDidMount
-    (did-mount [_]
-      (om/update! data :current-website {})
-      )
     om/IRender
     (render [_]
       (html [:div#website-page
@@ -104,9 +107,7 @@
                [:div#website-detail.z-depth-2.col.s5
                 (if (empty? (data :params))
                   [:p "Choose a website"]
-                  (om/build website-detail
-                            (data :current-website)
-                            {:init-state (data :params)}))]]]]))))
+                  (om/build website-detail (data :params)))]]]]))))
 
 (defn servers-page [data owner]
   (om/component
