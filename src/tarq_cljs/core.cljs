@@ -3,48 +3,24 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]]
-            [secretary.core :as secretary :refer-macros [defroute]]
-            [accountant.core :as accountant]
             [tarq-cljs.materialize.toolbar :as toolbar]
+            [tarq-cljs.state :refer [app-state]]
+            [tarq-cljs.routing :as path]
             [tarq-cljs.api :as api]))
 
 (enable-console-print!)
 
 (println "Edits to this text should show up in your developer console.")
 
-;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:page :websites :params {} :websites []}))
-
 (defn log [elem]
   (.log js/console (pr-str elem)))
-
-(accountant/configure-navigation!)
-
-(defroute servers-path "/servers" []
-  (swap! app-state assoc :page :servers))
-
-(defroute website-path "/servers/:server-id/websites/:id" [server-id id]
-  (swap! app-state assoc
-         :page :websites
-         :params {:server-id server-id
-                  :id id
-                  :current-website {}}))
-
-(defroute websites-path "/" []
-  (swap! app-state assoc :page :websites))
-
-(defroute "*" []
-  (swap! app-state assoc :page :404))
-
-(accountant/dispatch-current!)
 
 (defn website-list-item [{:keys [server_id id name]} owner]
   (reify
     om/IRender
     (render [_]
       (html [:li.collection-item
-             [:a {:href (website-path {:server-id server_id :id id})}
-              name]]))))
+             [:a {:href (path/website {:server-id server_id :id id})} name]]))))
 
 (defn websites-list [data owner]
   (reify
@@ -113,14 +89,14 @@
   (om/component
    (html [:div#server-page
           [:h1 "server component"]
-          [:a {:href (websites-path)} "websites"]])))
+          [:a {:href (path/websites)} "websites"]])))
 
 (defn not-found-page [data owner]
   (om/component
    (html [:div#not-found-page
           [:h1 "404"]
-          [:a {:href (websites-path)} "websites"]
-          [:a {:href (servers-path)} "servers"]])))
+          [:a {:href (path/websites)} "websites"]
+          [:a {:href (path/servers)} "servers"]])))
 
 (om/root
   (fn [data owner]
@@ -131,7 +107,7 @@
           (html [:div#page
                  (om/build toolbar/generate
                            data
-                           {:opts {:title (html [:a.brand-logo {:href (websites-path)} "Tarq"])
+                           {:opts {:title (html [:a.brand-logo {:href (path/websites)} "Tarq"])
                                    :items []}})
                  (condp = page
                    :websites (om/build websites-page data)
