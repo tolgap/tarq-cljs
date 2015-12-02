@@ -13,7 +13,10 @@
 (println "Edits to this text should show up in your developer console.")
 
 ;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:page :websites :params {} :websites []}))
+(defonce app-state (atom {:page :websites :params {} :websites [] :current-website {}}))
+
+(defn log [elem]
+  (.log js/console (pr-str elem)))
 
 (accountant/configure-navigation!)
 
@@ -22,7 +25,7 @@
 
 (defroute website-path "/servers/:server-id/websites/:id" [server-id id]
   (swap! app-state assoc
-         :page :website
+         :page :websites
          :params {:server-id server-id
                   :id id}))
 
@@ -33,9 +36,6 @@
   (swap! app-state assoc :page :404))
 
 (accountant/dispatch-current!)
-
-(defn log [elem]
-  (.log js/console (pr-str elem)))
 
 (defn website-list-item [{:keys [server_id id name]} owner]
   (reify
@@ -55,22 +55,58 @@
           (om/update! data nil websites))))
     om/IRender
     (render [_]
-      (html [:ul.collection.with-header
+      (html [:ul#website-list.collection.with-header.z-depth-2.col.s4
              [:li.collection-header [:h4 "Websites"]]
              (om/build-all website-list-item data)]))))
 
-(defn websites-page [data owner]
-  (om/component
-   (html [:div#website-page
-          [:div.container
-           (om/build websites-list (data :websites))
-           [:a {:href (servers-path)} "servers"]]])))
+(defn website-compact-view [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html [:div {:id (str "website-" (data :id))}
+             [:p (str "Website id: " (data :id))]
+             [:p (str "Server id: " (data :server_id))]]))))
 
-(defn website-page [data owner {:keys [server-id id]}]
-  (om/component
-   (html [:div#website-detail
-          [:p (str "Website id: " id)]
-          [:p (str "Server id: " server-id)]])))
+(defn website-detail [data owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:loading true})
+    om/IWillMount
+    (will-mount [_]
+      (go
+        (let [server-id (om/get-state owner :server-id)
+              id (om/get-state owner :id)
+              response (api/json-to (api/website-path server-id id))
+              website ((<! response) :body)]
+          (om/update! data [:current-website] website)
+          (om/set-state! owner [:loading] false))))
+    om/IRenderState
+    (render-state [_ {:keys [loading server-id id]}]
+      (log [server-id id])
+      (html
+       (if loading
+         [:p "Loading..."]
+         (om/build website-compact-view (data :current-website)))))))
+
+(defn websites-page [data owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (om/update! data :current-website {})
+      )
+    om/IRender
+    (render [_]
+      (html [:div#website-page
+             [:div.container
+              [:div.row
+               (om/build websites-list (data :websites))
+               [:div#website-detail.z-depth-2.col.s5
+                (if (empty? (data :params))
+                  [:p "Choose a website"]
+                  (om/build website-detail
+                            (data :current-website)
+                            {:init-state (data :params)}))]]]]))))
 
 (defn servers-page [data owner]
   (om/component
@@ -92,11 +128,12 @@
         (let [page (data :page)
               params (data :params)]
           (html [:div#page
-                 (om/build toolbar/generate data {:opts {:title "Tarq"
-                                                         :items []}})
+                 (om/build toolbar/generate
+                           data
+                           {:opts {:title (html [:a.brand-logo {:href (websites-path)} "Tarq"])
+                                   :items []}})
                  (condp = page
                    :websites (om/build websites-page data)
-                   :website (om/build website-page data {:opts params})
                    :servers (om/build servers-page data)
                    (om/build not-found-page data))])))))
   app-state
