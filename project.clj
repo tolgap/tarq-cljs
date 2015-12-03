@@ -10,6 +10,7 @@
                  [environ "1.0.1"]
                  [sablono "0.3.6"]
                  [secretary "1.2.3"]
+                 [figwheel "0.5.0-1"]
                  [venantius/accountant "0.1.5"]
                  [cljs-http "0.1.38"]
                  [org.omcljs/om "0.9.0"]
@@ -25,13 +26,20 @@
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
+  :doo {:build "test"
+        :paths {:phantom "./node_modules/.bin/phantomjs"}
+        :alias {:browsers [:chrome :firefox]
+                :all [:browsers :headless]}}
+
+  :jvm-opts ["-Xmx1g"]
+
   :cljsbuild {:builds
               [{:id "dev"
-                :source-paths ["src"]
+                :source-paths ["src" "env/dev/src"]
 
                 :figwheel {:on-jsload "tarq-cljs.core/on-js-reload"}
 
-                :compiler {:main tarq-cljs.core
+                :compiler {:main tarq-cljs.dev
                            :asset-path "js/compiled/out"
                            :output-to "resources/public/js/compiled/tarq_cljs.js"
                            :output-dir "resources/public/js/compiled/out"
@@ -40,9 +48,9 @@
                ;; production. You can build this with:
                ;; lein cljsbuild once min
                {:id "min"
-                :source-paths ["src"]
+                :source-paths ["src" "env/prod/src"]
                 :compiler {:output-to "resources/public/js/compiled/tarq_cljs.js"
-                           :main tarq-cljs.core
+                           :main tarq-cljs.prod
                            :optimizations :advanced
                            :pretty-print false}}
                {:id "test"
