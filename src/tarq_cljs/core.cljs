@@ -98,26 +98,21 @@
           [:a {:href (path/websites)} "websites"]
           [:a {:href (path/servers)} "servers"]])))
 
-(om/root
-  (fn [data owner]
-    (reify om/IRender
-      (render [_]
-        (let [page (data :page)
-              params (data :params)]
-          (html [:div#page
-                 (om/build toolbar/generate
-                           data
-                           {:opts {:title (html [:a.brand-logo {:href (path/websites)} "Tarq"])
-                                   :items []}})
-                 (condp = page
-                   :websites (om/build websites-page data)
-                   :servers (om/build servers-page data)
-                   (om/build not-found-page data))])))))
-  app-state
-  {:target (. js/document (getElementById "app"))})
-
-(defn on-js-reload []
-  ;; optionally touch your app-state to force rerendering depending on
-  ;; your application
-  ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
+(defn app []
+  (om/root
+   (fn [data owner]
+     (reify om/IRender
+       (render [_]
+         (let [page (data :page)
+               params (data :params)]
+           (html [:div#page
+                  (om/build toolbar/generate
+                            data
+                            {:opts {:title (html [:a.brand-logo {:href (path/websites)} "Tarq"])
+                                    :items []}})
+                  (condp = page
+                    :websites (om/build websites-page data)
+                    :servers (om/build servers-page data)
+                    (om/build not-found-page data))])))))
+   app-state
+   {:target (. js/document (getElementById "app"))}))
