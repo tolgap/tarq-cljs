@@ -1,5 +1,6 @@
 # tarq-cljs
 
+[![Build Status](https://travis-ci.org/tolgap/tarq-cljs.svg?branch=master)](https://travis-ci.org/tolgap/tarq-cljs)
 FIXME: Write a one-line description of your library/project.
 
 ## Overview
