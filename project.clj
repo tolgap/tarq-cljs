@@ -27,7 +27,7 @@
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
   :doo {:build "test"
-        :paths {:phantom "./node_modules/.bin/phantomjs"}
+        :paths {:phantom "phantomjs"}
         :alias {:browsers [:chrome :firefox]
                 :all [:browsers :headless]}}
 
