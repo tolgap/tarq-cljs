@@ -12,3 +12,12 @@
                  data {:name "some plugin name"}]
              (om/root plugin/plugin-list-item data {:target c})
              (dommy/text (sel1 c :li.collection-item.plugin)))))))
+
+(deftest plugins-list
+  (testing "shows expand button"
+    (is (= "Show plugins"
+           (let [c (append-container!)
+                 data [{:name "plugin-1"}
+                       {:name "plugin-2"}]]
+             (om/root plugin/plugins-list data {:target c})
+             (dommy/text (sel1 c :a)))))))
