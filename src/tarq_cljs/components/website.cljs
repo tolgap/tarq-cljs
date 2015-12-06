@@ -4,7 +4,8 @@
             [sablono.core :as html :refer-macros [html]]
             [tarq-cljs.state :refer [app-state]]
             [tarq-cljs.routing :as path]
-            [tarq-cljs.api :as api]))
+            [tarq-cljs.api :as api]
+            [tarq-cljs.components.plugin :as plugin]))
 
 (defn website-list-item [{:keys [server_id id name]} owner]
   (reify
@@ -33,7 +34,8 @@
     (render [_]
       (html [:div {:id (str "website-" (data :id))}
              [:p (str "Website id: " (data :id))]
-             [:p (str "Server id: " (data :server_id))]]))))
+             [:p (str "Server id: " (data :server_id))]
+             (om/build plugin/plugins-list (data :plugins))]))))
 
 (defn load-website [props data owner]
   (om/set-state! owner [:loading] true)
