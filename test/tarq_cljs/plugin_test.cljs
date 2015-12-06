@@ -20,4 +20,11 @@
                  data [{:name "plugin-1"}
                        {:name "plugin-2"}]]
              (om/root plugin/plugins-list data {:target c})
-             (dommy/text (sel1 c :a)))))))
+             (dommy/text (sel1 c :a))))))
+  (testing "shows the 2 plugins"
+    (is (= 2
+           (let [c (append-container!)
+                 data [{:name "plugin-1"}
+                       {:name "plugin-2"}]]
+             (om/root plugin/plugins-list data {:target c :init-state {:expanded? true}})
+             (count (sel c :li.collection-item.plugin)))))))
