@@ -2,10 +2,43 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]
+            [clojure.string :as string]
             [tarq-cljs.state :refer [app-state]]
             [tarq-cljs.routing :as path]
             [tarq-cljs.api :as api]
             [tarq-cljs.components.plugin :as plugin]))
+
+(defn perform-filter [data owner]
+  (let [text (-> (om/get-node owner "search-input")
+                 .-value)
+        websites (om/get-state :websites data)]
+    (if (not (empty? text))
+      (om/transact! data :filtered-websites (fn [_]
+                                              (filterv #(re-find (re-pattern text) (string/lower-case (% :name))) websites)))
+      (om/transact! data :filtered-websites (fn [_] [])))))
+
+(defn website-filter [data owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:filter {:cms_type nil} :search [:name :blog_name :cms_type]})
+    om/IRenderState
+    (render-state [_ {:keys [filter search]}]
+      (html
+       [:div.container
+        [:div.row
+         [:div#filter.z-depth-2
+          [:div.input-field.col.s3
+           [:input {:ref "search-input"
+                    :type "text"
+                    :placeholder "Search"
+                    :onChange #(perform-filter data owner)}]]
+          [:div.input-field.col.s3
+           [:select.browser-default {:ref "cms-type"}
+            [:option {:value nil :selected "selected"} "Choose CMS Type"]
+            [:option {:value "wordpress"} "Wordpress"]
+            [:option {:value "drupal"} "Drupal"]
+            [:option {:value "rails"} "Rails"]]]]]]))))
 
 (defn website-list-item [{:keys [server_id id name]} owner]
   (reify
@@ -24,9 +57,10 @@
           (om/update! data nil websites))))
     om/IRender
     (render [_]
-      (html [:ul#website-list.collection.with-header.z-depth-2.col.s4
-             [:li.collection-header [:h4 "Websites"]]
-             (om/build-all website-list-item data)]))))
+      (html [:div#website-list.col.s6
+             [:ul.collection.with-header.z-depth-2
+              [:li.collection-header [:h4 "Websites"]]
+              (om/build-all website-list-item data)]]))))
 
 (defn website-compact-view [data owner]
   (reify
@@ -70,10 +104,11 @@
     om/IRender
     (render [_]
       (html [:div#website-page
+             (om/build website-filter data)
              [:div.container
               [:div.row
                (om/build websites-list (data :websites))
-               [:div#website-detail.collection.z-depth-2.col.s5
+               [:div#website-detail.collection.z-depth-2.col.s6
                 (if (empty? (data :params))
                   [:p "Choose a website"]
                   (om/build website-detail (data :params)))]]]]))))
