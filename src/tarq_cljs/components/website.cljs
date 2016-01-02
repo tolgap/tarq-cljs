@@ -1,6 +1,7 @@
 (ns ^:figwheel-always tarq-cljs.components.website
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
+            [cljs.core.async :refer [put! <! chan]]
             [sablono.core :as html :refer-macros [html]]
             [clojure.string :as string]
             [tarq-cljs.state :refer [app-state]]
@@ -8,22 +9,15 @@
             [tarq-cljs.api :as api]
             [tarq-cljs.components.plugin :as plugin]))
 
-(defn perform-filter [data owner]
-  (let [text (-> (om/get-node owner "search-input")
-                 .-value)
-        websites (om/get-state :websites data)]
-    (if (not (empty? text))
-      (om/transact! data :filtered-websites (fn [_]
-                                              (filterv #(re-find (re-pattern text) (string/lower-case (% :name))) websites)))
-      (om/transact! data :filtered-websites (fn [_] [])))))
+(defn perform-filter [data original q]
+  (if (not (empty? q))
+    (om/update! data :search-set (filterv #(re-find (re-pattern q) (string/lower-case (% :name))) original))
+    (om/update! data :search-set original)))
 
 (defn website-filter [data owner]
   (reify
-    om/IInitState
-    (init-state [_]
-      {:filter {:cms_type nil} :search [:name :blog_name :cms_type]})
     om/IRenderState
-    (render-state [_ {:keys [filter search]}]
+    (render-state [_ {:keys [channel]}]
       (html
        [:div.container
         [:div.row
@@ -32,7 +26,9 @@
            [:input {:ref "search-input"
                     :type "text"
                     :placeholder "Search"
-                    :onChange #(perform-filter data owner)}]]
+                    :on-change (fn [_]
+                                 (put! channel (-> (om/get-node owner "search-input")
+                                                   .-value)))}]]
           [:div.input-field.col.s3
            [:select.browser-default {:ref "cms-type"}
             [:option {:value nil :selected "selected"} "Choose CMS Type"]
@@ -49,12 +45,6 @@
 
 (defn websites-list [data owner]
   (reify
-    om/IWillMount
-    (will-mount [_]
-      (go
-        (let [response (api/json-to api/websites-path)
-              websites ((<! response) :body)]
-          (om/update! data nil websites))))
     om/IRender
     (render [_]
       (html [:div#website-list.col.s6
@@ -101,13 +91,28 @@
 
 (defn websites-page [data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:search-channel (chan)})
+    om/IWillMount
+    (will-mount [_]
+      (go
+        (let [response (api/json-to api/websites-path)
+              websites ((<! response) :body)
+              channel (om/get-state owner :search-channel)]
+          (om/update! data :search-set websites)
+          (om/update! data :websites websites)
+          (loop []
+            (let [q (<! channel)]
+              (perform-filter data websites q)
+              (recur))))))
+    om/IRenderState
+    (render-state [_ {:keys [search-channel]}]
       (html [:div#website-page
-             (om/build website-filter data)
+             (om/build website-filter (data :websites) {:init-state {:channel search-channel}})
              [:div.container
               [:div.row
-               (om/build websites-list (data :websites))
+               (om/build websites-list (data :search-set))
                [:div#website-detail.collection.z-depth-2.col.s6
                 (if (empty? (data :params))
                   [:p "Choose a website"]
