@@ -6,7 +6,7 @@ body {
   height: 100vh;
   overflow-y: hidden;
 }
-#website-list .collection {
+#website-list .collection, #website-detail {
   height: 70vh;
   overflow-y: scroll;
 }
