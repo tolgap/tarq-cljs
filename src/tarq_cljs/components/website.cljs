@@ -36,12 +36,14 @@
             [:option {:value "drupal"} "Drupal"]
             [:option {:value "rails"} "Rails"]]]]]]))))
 
-(defn website-list-item [{:keys [server_id id name]} owner]
+(defn website-list-item [{:keys [server_id id name] :as data} owner]
   (reify
     om/IRender
     (render [_]
       (html [:li.collection-item
-             [:a {:href (path/website {:server-id server_id :id id})} name]]))))
+             [:a {:href (path/website {:server-id server_id :id id})} name]
+             [:div.icons
+              [:i {:class (str "icon icon-" (data :cms_type))}]]]))))
 
 (defn websites-list [data owner]
   (reify
