@@ -3,4 +3,5 @@
 (defonce app-state
   (atom {:page :websites
          :params {}
-         :websites []}))
+         :websites []
+         :search-set []}))

@@ -1,14 +1,12 @@
 /* some style */
-#website-list {
-  position: fixed;
-  bottom: 0;
-  overflow-y: scroll;
-  height: 85%;
+.collection {
+  margin: 0;
 }
-#website-detail {
-  position: fixed;
-  bottom: 0;
+body {
+  height: 100vh;
+  overflow-y: hidden;
+}
+#website-list .collection, #website-detail {
+  height: 70vh;
   overflow-y: scroll;
-  height: 85%;
-  left: 50%;
 }
