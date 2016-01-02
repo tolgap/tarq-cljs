@@ -14,5 +14,7 @@ pom.xml
 .lein-plugins/
 .repl
 .nrepl-port
+.idea/
+tarq-cljs.iml
 profiles.clj
 .lein-env
