@@ -12,7 +12,7 @@
                  [secretary "1.2.3"]
                  [figwheel "0.5.0-1"]
                  [figwheel-sidecar "0.5.0-1"]
-                 [venantius/accountant "0.1.5"]
+                 [venantius/accountant "0.1.6"]
                  [cljs-http "0.1.38"]
                  [org.omcljs/om "0.9.0"]
                  [prismatic/dommy "1.1.0"]]
