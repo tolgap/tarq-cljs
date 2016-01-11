@@ -87,7 +87,7 @@
     (let [server-id (props :server-id)
           id (props :id)
           response (api/json-to (api/website-path server-id id))
-          website ((<! response) :body)]
+          website (<! response)]
       (om/update! data [:current-website] website)
       (om/set-state! owner [:loading] false))))
 
@@ -124,7 +124,7 @@
 (defn listen-and-process-search-filters [data owner]
   (go
     (let [response (api/json-to api/websites-path)
-          websites ((<! response) :body)
+          websites (<! response)
           channel (om/get-state owner :filter-channel)]
       (om/update! data :search-set websites)
       (om/update! data :websites websites)
