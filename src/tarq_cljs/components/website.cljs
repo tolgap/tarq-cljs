@@ -79,6 +79,7 @@
       (html [:div {:id (str "website-" (data :id))}
              [:p (str "Website id: " (data :id))]
              [:p (str "Server id: " (data :server_id))]
+             [:p (str "Number of vulnerabilities: " (count (data :vulnerabilities)))]
              (om/build plugin/plugins-table (data :plugins))]))))
 
 (defn load-website [props data owner]
