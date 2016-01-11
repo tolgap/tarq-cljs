@@ -13,17 +13,23 @@
   (-> (om/get-node owner ref)
       .-value))
 
+(defn set-website-filter [props data owner]
+  (go
+    (let [channel (om/get-state owner :channel)]
+      (put! channel (merge data props)))))
+
 ;; This components get passed a `(chan)` to push changes to in `(will-receive-props)`
 (defn website-filter [data owner]
   (reify
     om/IInitState
     (init-state [_]
       {:cms_type nil :name nil})
+    om/IWillMount
+    (will-mount [_]
+      (set-website-filter data data owner))
     om/IWillReceiveProps
     (will-receive-props [_ next-props]
-      (go
-        (let [channel (om/get-state owner :channel)]
-          (put! channel (merge data next-props)))))
+      (set-website-filter next-props data owner))
     om/IRender
     (render [_]
       (html
