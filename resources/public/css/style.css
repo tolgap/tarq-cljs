@@ -30,5 +30,6 @@ body {
 }
 .icon-rails {
   background-image: url('../img/rails.png');
-  background-size: 10px 18px;
+  width: 14px;
+  background-size: 14px 18px;
 }
