@@ -10,3 +10,26 @@ body {
   height: 70vh;
   overflow-y: scroll;
 }
+.icons {
+  margin-left: 10px;
+  display: inline-block;
+  height: 15px;
+}
+.icon {
+  margin-right: 2px;
+  width: 18px;
+  height: 18px;
+  display: block;
+  background-size: 18px 18px;
+}
+.icon-wordpress {
+  background-image: url('../img/wordpress.png');
+}
+.icon-drupal {
+  background-image: url('../img/drupal.png');
+}
+.icon-rails {
+  background-image: url('../img/rails.png');
+  width: 14px;
+  background-size: 14px 18px;
+}

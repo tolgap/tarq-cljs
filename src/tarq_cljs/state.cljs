@@ -4,4 +4,5 @@
   (atom {:page :websites
          :params {}
          :websites []
-         :search-set []}))
+         :search-set []
+         :filters {}}))
