@@ -79,7 +79,7 @@
       (html [:div {:id (str "website-" (data :id))}
              [:p (str "Website id: " (data :id))]
              [:p (str "Server id: " (data :server_id))]
-             (om/build plugin/plugins-list (data :plugins))]))))
+             (om/build plugin/plugins-table (data :plugins))]))))
 
 (defn load-website [props data owner]
   (om/set-state! owner [:loading] true)

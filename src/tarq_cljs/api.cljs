@@ -15,6 +15,9 @@
 (defn website-path [server-id id]
   (string/join "/" [api-url "servers" server-id "websites" id]))
 
+(defn plugin-vulnerabilities-path [plugin-id]
+  (string/join "/" [api-url "plugins" plugin-id "vulnerabilities"]))
+
 (defn json-to [path]
   (http/get path {:with-credentials? false
                   :accepts :json
