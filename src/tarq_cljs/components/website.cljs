@@ -77,9 +77,16 @@
     om/IRender
     (render [_]
       (html [:div {:id (str "website-" (data :id))}
+             (if (comp not empty? (data :blog_name))
+               [:h4 (data :blog_name)]
+               nil)
+             (if (comp not empty? (data :version))
+               [:p (str (string/capitalize (data :cms_type)) " version: " (data :version))]
+               nil)
              [:p (str "Website id: " (data :id))]
              [:p (str "Server id: " (data :server_id))]
-             (om/build plugin/plugins-list (data :plugins))]))))
+             [:p (str "Number of vulnerabilities: " (count (data :vulnerabilities)))]
+             (om/build plugin/plugins-table (data :plugins))]))))
 
 (defn load-website [props data owner]
   (om/set-state! owner [:loading] true)
