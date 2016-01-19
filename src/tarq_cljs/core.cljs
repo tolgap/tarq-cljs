@@ -4,6 +4,7 @@
             [sablono.core :as html :refer-macros [html]]
             [tarq-cljs.materialize.toolbar :as toolbar]
             [tarq-cljs.components.website :as website]
+            [tarq-cljs.components.vulnerability :as vulnerability]
             [tarq-cljs.state :refer [app-state]]
             [tarq-cljs.routing :as path]))
 
