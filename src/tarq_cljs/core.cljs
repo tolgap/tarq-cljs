@@ -41,6 +41,7 @@
                   (condp = page
                     :websites (om/build website/websites-page data)
                     :servers (om/build servers-page data)
+                    :vulnerabilities (om/build vulnerability/vulnerabilities-page (data :vulnerabilities))
                     (om/build not-found-page data))])))))
    app-state
    {:target (. js/document (getElementById "app"))}))
