@@ -15,6 +15,9 @@
 (defn website-path [server-id id]
   (string/join "/" [api-url "servers" server-id "websites" id]))
 
+(def vulnerabilities-path
+  (string/join "/" [api-url "vulnerabilities"]))
+
 (defn plugin-vulnerabilities-path [website-id plugin-id]
   (string/join "/" [api-url "websites" website-id "plugins" plugin-id "vulnerabilities"]))
 

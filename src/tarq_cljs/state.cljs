@@ -5,4 +5,7 @@
          :params {}
          :websites []
          :search-set []
-         :filters {}}))
+         :filters {}
+         :vulnerabilities {:objects []
+                           :search-set []
+                           :filters {}}}))

@@ -6,6 +6,13 @@ body {
   height: 100vh;
   overflow-y: hidden;
 }
+.restricted-height {
+  height: 80vh;
+  overflow-y: scroll;
+}
+#vulnerability-page {
+  margin-top: 30px;
+}
 #website-list .collection, #website-detail {
   height: 70vh;
   overflow-y: scroll;
