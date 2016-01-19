@@ -16,6 +16,10 @@
                   :id id
                   :current-website {}}))
 
+(defroute vulnerabilities "/vulnerabilities" []
+  (swap! app-state assoc
+         :page :vulnerabilities))
+
 (defroute websites "/" []
   (swap! app-state assoc
          :page :websites))

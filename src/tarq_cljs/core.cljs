@@ -32,10 +32,12 @@
          (let [page (data :page)
                params (data :params)]
            (html [:div#page
-                  (om/build toolbar/generate
-                            data
+                  (om/build toolbar/with-text-items
+                            page
                             {:opts {:title (html [:a.brand-logo {:href (path/websites)} "Tarq"])
-                                    :items []}})
+                                    :items [{:name "Websites" :url (path/websites)}
+                                            {:name "Vulnerabilities" :url (path/vulnerabilities)}]
+                                    :item-fn toolbar/title-item}})
                   (condp = page
                     :websites (om/build website/websites-page data)
                     :servers (om/build servers-page data)
