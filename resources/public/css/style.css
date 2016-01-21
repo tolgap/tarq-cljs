@@ -40,6 +40,9 @@ body {
   width: 14px;
   background-size: 14px 18px;
 }
+.table-wrapper {
+  padding: 0 20px;
+}
 
 /* Override materialize */
 @media only screen and (min-width: 1140px) {
