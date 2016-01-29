@@ -30,9 +30,7 @@
              (count (sel c :li.collection-item.plugin)))))))
 
 (deftest plugin-table-item
-  (let [all-done-chan (chan)
-        mock-ch (chan)
-        c (append-container!)
+  (let [c (append-container!)
         data {:name "plugin"
               :version "0.0.1"}]
     (testing "should show plugin name, version and num vulns"
