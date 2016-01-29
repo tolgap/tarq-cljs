@@ -59,7 +59,7 @@
     om/IRender
     (render [_]
       (html [:li.collection-item
-             [:a {:href (path/website {:server-id server_id :id id})} name]
+             [:a {:href (path/website {:id id})} name]
              [:div.icons
               [:i {:class (str "icon icon-" (data :cms_type))}]]]))))
 
@@ -93,7 +93,7 @@
   (go
     (let [server-id (props :server-id)
           id (props :id)
-          response (api/json-to (api/website-path server-id id))
+          response (api/json-to (api/website-path id))
           website (<! response)]
       (om/update! data [:current-website] website)
       (om/set-state! owner [:loading] false))))

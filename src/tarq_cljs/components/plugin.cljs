@@ -35,7 +35,7 @@
     om/IWillMount
     (will-mount [_]
       (go
-        (let [response (<! (api/json-to (api/plugin-vulnerabilities-path (data :website_id) (data :plugin_id))))]
+        (let [response (<! (api/json-to (api/plugin-vulnerabilities-path (data :id))))]
           (om/set-state! owner :vulnerability-count (count response)))))
     om/IRenderState
     (render-state [_ {:keys [vulnerability-count]}]
