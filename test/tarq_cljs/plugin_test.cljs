@@ -28,3 +28,13 @@
                        {:name "plugin-2"}]]
              (om/root plugin/plugins-list data {:target c :init-state {:expanded? true}})
              (count (sel c :li.collection-item.plugin)))))))
+
+(deftest plugin-table-item
+  (let [c (append-container!)
+        data {:name "plugin"
+              :version "0.0.1"}]
+    (testing "should show plugin name, version and num vulns"
+      (om/root plugin/plugin-table-item data {:target c
+                                              :init-state {:vulnerability-count 2}})
+      (is (= "plugin0.0.12"
+             (dommy/text c))))))
