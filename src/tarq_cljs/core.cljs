@@ -24,6 +24,12 @@
           [:a {:href (path/websites)} "websites"]
           [:a {:href (path/servers)} "servers"]])))
 
+(def menu-items
+  {:title (html [:a.brand-logo {:href (path/websites)} "Tarq"])
+   :items [{:name "Websites" :url (path/websites)}
+           {:name "Vulnerabilities" :url (path/vulnerabilities)}]
+   :item-fn toolbar/title-item})
+
 (defn app []
   (om/root
    (fn [data owner]
@@ -32,12 +38,7 @@
          (let [page (data :page)
                params (data :params)]
            (html [:div#page
-                  (om/build toolbar/with-text-items
-                            page
-                            {:opts {:title (html [:a.brand-logo {:href (path/websites)} "Tarq"])
-                                    :items [{:name "Websites" :url (path/websites)}
-                                            {:name "Vulnerabilities" :url (path/vulnerabilities)}]
-                                    :item-fn toolbar/title-item}})
+                  (om/build toolbar/with-text-items page {:opts menu-items})
                   (condp = page
                     :websites (om/build website/websites-page data)
                     :servers (om/build servers-page data)
