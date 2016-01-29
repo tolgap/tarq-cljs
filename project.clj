@@ -20,7 +20,7 @@
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-1"]
             [lein-environ "1.0.1"]
-            [lein-doo "0.1.5-SNAPSHOT"]]
+            [lein-doo "0.1.6-SNAPSHOT"]]
 
   :source-paths ["src"]
   :test-paths ["test"]
@@ -28,7 +28,7 @@
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
   :doo {:build "test"
-        :paths {:phantom "phantomjs"}
+        :paths {:phantom "phantomjs --web-security=false --local-to-remote-url-access=true"}
         :alias {:browsers [:chrome :firefox]
                 :all [:browsers :headless]}}
 
