@@ -6,6 +6,13 @@ body {
   height: 100vh;
   overflow-y: hidden;
 }
+.restricted-height {
+  height: 80vh;
+  overflow-y: scroll;
+}
+#vulnerability-page {
+  margin-top: 30px;
+}
 #website-list .collection, #website-detail {
   height: 70vh;
   overflow-y: scroll;
@@ -22,16 +29,19 @@ body {
   display: block;
   background-size: 18px 18px;
 }
-.icon-wordpress {
+.icon-wordpress, .icon-wp-core {
   background-image: url('../img/wordpress.png');
 }
 .icon-drupal {
   background-image: url('../img/drupal.png');
 }
-.icon-rails {
+.icon-rails, .icon-gem {
   background-image: url('../img/rails.png');
   width: 14px;
   background-size: 14px 18px;
+}
+.table-wrapper {
+  padding: 0 20px;
 }
 
 /* Override materialize */

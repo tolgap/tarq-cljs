@@ -1,8 +1,11 @@
 (ns tarq-cljs.state)
 
 (defonce app-state
-  (atom {:page :websites
+  (atom {:page nil
          :params {}
          :websites []
          :search-set []
-         :filters {}}))
+         :filters {}
+         :vulnerabilities {:objects []
+                           :search-set []
+                           :filters {}}}))

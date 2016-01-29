@@ -9,12 +9,15 @@
   (swap! app-state assoc
          :page :servers))
 
-(defroute website "/servers/:server-id/websites/:id" [server-id id]
+(defroute website "/websites/:id" [id]
   (swap! app-state assoc
          :page :websites
-         :params {:server-id server-id
-                  :id id
+         :params {:id id
                   :current-website {}}))
+
+(defroute vulnerabilities "/vulnerabilities" []
+  (swap! app-state assoc
+         :page :vulnerabilities))
 
 (defroute websites "/" []
   (swap! app-state assoc
